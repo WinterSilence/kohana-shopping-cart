@@ -1,0 +1,44 @@
+<h3>{'Shopping Cart'|i18n}</h3>
+{if $cart.products}
+<form method="post" action="{'route:cart'|url}">
+	<div class="update">
+		<input type="submit" name="clear" value="{'Clear'|i18n}">
+	</div>
+	<table class="tbl">
+		<tr>
+			<th>{'Name'|i18n}</th>
+			<th>{'Price'|i18n}</th>
+			<th>{'Quantity'|i18n}</th>
+			<th></th>
+		</tr>
+		{foreach $cart.products as $key => $product}
+		<tr class="{cycle values='odd,even'}">
+			<td class="name">{$product.name}</td>
+			<td class="price">{$product.price}</td>
+			<td class="qty">
+				<input type="input" name="cart[{$key}]" value="{$product.qty}">
+			</td>
+			<td class="del">
+				{*
+				<a href="{"route:cart,act:delete,id`$key`"|url}">
+					<img src="{$smarty.const.IMG_URL}btn/del.png" alt="{'Delete'|i18n}">
+				</a>
+				*}
+			</td>
+		</tr>
+		{/foreach}
+	</table>
+	<div class="update">
+		<input type="submit" name="update" value="{'Update'|i18n}">
+	</div>
+	<div class="total">
+		<div>{'Total cost'|i18n}:  <b id="cart_total_cost">{$cart.total.cost}</b></div>
+		<div>{'Total count'|i18n}: <b id="cart_total_count">{$cart.total.count}</b></div>
+	</div>
+	<div class="checkout">
+		<input type="submit" name="checkout" value="{'Checkout'|i18n}">
+	</div>
+</form>
+{else}
+	<div class="empty">{'Cart is empty'|i18n}</div>
+{/if}
