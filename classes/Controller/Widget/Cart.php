@@ -6,7 +6,7 @@ class Controller_Widget_Cart extends Controller_Template
 	
 	public $auto_render = TRUE;
 	
-	protected $cart;
+	protected $_cart;
 	
 	public function before() 
 	{
@@ -15,7 +15,7 @@ class Controller_Widget_Cart extends Controller_Template
 			$this->auto_render = FALSE;
 		}
 		
-		$this->cart = Cart::instance();
+		$this->_cart = Cart::instance();
 		
 		parent::before();
 	}
@@ -24,11 +24,11 @@ class Controller_Widget_Cart extends Controller_Template
 	{
 		if ($this->request->is_ajax())
 		{
-			$this->response->body(json_encode($this->cart->content));
+			$this->response->body(json_encode($this->_cart->content));
 		}
 		else
 		{
-			$this->template->cart = $this->cart->content;
+			$this->template->cart = $this->_cart->content;
 		}
 	}
 	
@@ -38,29 +38,23 @@ class Controller_Widget_Cart extends Controller_Template
 		{
 			try
 			{
-				$this->cart->set($product['id'], $product['qty'], (array)$product['options']);
+				$this->_cart->set($product['id'], $product['qty'], (array) $product['options']);
 			}
 			catch (Kohana_Exception $e)
 			{
-				$errors = (string)$e;
+				$errors = Debug::dump($e);
 			}
 		}
 		
 		if ($this->request->is_ajax())
 		{
-			if ( isset($errors))
-			{
-				$this->response->body(json_encode(array('result' => 'error', 'errors' => $errors)));
-			}
-			else
-			{
-				$this->response->body(json_encode($this->cart->content));
-			}
+			$result = isset($errors) ? array('result' => 'error', 'errors' => $errors) : $this->_cart->content;
+			$this->response->body(json_encode($result));
 		}
 		else
 		{
-			//$this->template->cart = $this->cart->content;
-			//HTTP::redirect(Route::url('cart'));
+			$this->template->cart = $this->_cart->content;
+			HTTP::redirect(Route::url('cart'));
 		}
 	}
 	

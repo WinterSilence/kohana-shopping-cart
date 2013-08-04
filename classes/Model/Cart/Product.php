@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') OR die('No direct access allowed.');
 
 /**
  * Product adapter. Return data in carts format.
@@ -19,8 +19,11 @@
 class Model_Cart_Product extends ORM
 {
 	protected $_table_name    = 'products';
+	
 	protected $_primary_key   = 'id';
+	
 	protected $_db_group      = 'default';
+	
 	protected $_table_columns = array(
 		'id'       => array(),
 		'name'     => array(),
@@ -31,7 +34,7 @@ class Model_Cart_Product extends ORM
 	
 	public function get_product($id, $qty, array $options = array())
 	{
-		 // get only active products & return correct fields names
+		 // Get only active products & return correct fields names
 		$this->clear()->select(array('in_stock', 'qty'))->where('active', '=', 1);
 		
 		if (Arr::is_array($id))
@@ -53,8 +56,8 @@ class Model_Cart_Product extends ORM
 		else
 		{
 			// TODO:  
-			throw new Kohana_Exception(__('Old data =\ '));
+			throw new Database_Exception(__('Old data =\ '));
 		}
 	}
 	
-}
+} // End Model_Cart_Product

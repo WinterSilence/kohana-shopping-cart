@@ -48,8 +48,3 @@
 	<?php endif; ?>
 	
 </div>
-
-<div style="padding: 20px; background: 1px dotted grey;">
-	<?php echo Request::factory('widget/cart')->execute()->body() ?>
-</div>
-<?php echo View::factory('profiler/stats') ?>

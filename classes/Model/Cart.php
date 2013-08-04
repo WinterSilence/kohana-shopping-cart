@@ -1,6 +1,5 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
- *
  * Shopping cart
  *
  * @package   Kohana/Cart
@@ -37,9 +36,9 @@
  *  $cart->delete($id1)->set($id2, $qty2, $options2)->set($id3, $qty3);
  * 
  */
-class Model_Cart extends Model
+abstract class Model_Cart extends Model
 {
-	// Object instance
+	// Cart instance
 	protected static $_instance;
 	
 	// Configuration
@@ -61,10 +60,10 @@ class Model_Cart extends Model
 	protected function __wakeup(){}
 	
 	// Protect construct method 
-	protected function __construct(array $config = array())
+	protected function __construct()
 	{
 		// Load configuration
-		$this->_config = Arr::merge(Kohana::$config->load('cart'), $config);
+		$this->_config = Kohana::$config->load('cart')->as_array();
 		
 		// Load Session object
 		$this->_session = Session::instance($this->_config['session']['type']);
@@ -81,12 +80,12 @@ class Model_Cart extends Model
 	}
 	
 	// Get instance of class
-	public static function instance(array $config = array())
+	public static function instance()
 	{
-		// recreate object if you set new config
-		if (is_null(self::$_instance) OR ! empty($config))
+		// Recreate object if you set new config
+		if ( ! self::$_instance)
 		{
-			self::$_instance = new self($config);
+			self::$_instance = new Cart;
 		}
 		return self::$_instance;
 	}
@@ -109,7 +108,6 @@ class Model_Cart extends Model
 	protected function _get_discount()
 	{
 		// TODO: 
-		return 0;
 	}
 	
 	// Set new total values
@@ -138,14 +136,12 @@ class Model_Cart extends Model
 	{
 		// recalc result
 		$this->_set_total();
-		
 		// save in session
 		$this->_session->set(
 			$this->_config['session']['key'],
 			$this->_content,
 			$this->_config['session']['lifetime']
 		);
-		
 		return $this;
 	}
 	
@@ -163,7 +159,7 @@ class Model_Cart extends Model
 	 * Get product(s) with options from database
 	 * TODO: add options
 	 */
-	protected function _get_product($id, $qty = 1, array $options = array())
+	protected function _get_product($id, $qty = 1, array $options = NULL)
 	{
 		// Create model only when it's needed
 		if ( ! is_object($this->_model_product))
@@ -175,15 +171,16 @@ class Model_Cart extends Model
 	}
 	
 	// Set(add) product(s) from cart content
-	public function set($id, $qty = 1, array $options = array())
+	public function set($id, $qty = 1, array $options = NULL)
 	{
 
 		if (Arr::is_array($id))
 		{
+			// TODO: not work !
 			$products = $this->_get_product(
-				Arr::pluck($id, 'id'), 
-				Arr::pluck($id, 'qty'),
-				Arr::pluck($id, 'options')
+				Arr::get($id, 'id'), 
+				Arr::get($id, 'qty'),
+				Arr::get($id, 'options')
 			);
 			// $products = $this->_get_product($id, $qty, $options);
 			$products = $this->_get_product($id, $qty, $options);
@@ -199,6 +196,7 @@ class Model_Cart extends Model
 			$product['options'] = Arr::get($product, 'options', array());
 			// Composite identifier
 			$mix_id = $this->_get_mix_id($product['id'], $product['options']);
+			
 			if (isset($this->_content['products'][$mix_id]))
 			{
 				if ($product['qty'] >= ($this->_content['products'][$mix_id]['qty'] + $qty))
@@ -207,7 +205,8 @@ class Model_Cart extends Model
 				}
 				else
 				{
-					throw new Kohana_Exception('In stock only :qty items', array(':qty' => $product['qty']));
+					throw new Kohana_Exception('In stock only :qty items', 
+						array(':qty' => $product['qty']));
 					// return FALSE;
 				}
 			}
@@ -217,11 +216,12 @@ class Model_Cart extends Model
 				$this->_content['products'][$mix_id] = $product;
 			}
 		}
+		
 		return $this->_save();
 	}
 	
 	// Get product(s) from cart content
-	public function get($id = NULL, array $options = array())
+	public function get($id = NULL, array $options = NULL)
 	{
 		if (empty($id))
 		{
@@ -231,13 +231,13 @@ class Model_Cart extends Model
 		else
 		{
 			// Get one
-			$id = $this->_get__mix_id($id, $options);
+			$id = $this->_get_mix_id($id, $options);
 			return $this->_content['products'][$id];
 		}
 	}
 	
 	// Delete product(s) from cart content
-	public function delete($id = NULL, array $options = array())
+	public function delete($id = NULL, array $options = NULL)
 	{
 		if (empty($id)) 
 		{
@@ -253,4 +253,4 @@ class Model_Cart extends Model
 		return $this->_save();
 	}
 	
-}
+} // End Model_Cart
