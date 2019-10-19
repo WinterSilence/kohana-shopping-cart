@@ -1,15 +1,13 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 
-if ( ! Route::cache())
-{
-	Route::set('cart', '(<directory>/)cart(/<action>(/<id>))', array(
-			'directory' => '(widget)',
-			'action'    => '(delete|clear|add|update|index)',
-			'id'        => '[a-zA-Z0-9_\-]+',
-		))
-		->defaults(array(
-			//'directory'  => 'Widget',
-			'controller' => 'Cart',
-			'action'     => 'index',
-		));
+if (! Route::cache()) {
+	Route::set(
+		'cart',
+		'(<directory>/)cart(/<action>(/<id>))', 
+		[
+			'directory' => '(Widget)',
+			'action' => '(add|update|delete|clear|index)',
+			'id' => '[-a-z0-9_]+',
+		]
+	)->defaults(['controller' => 'Cart', 'action' => 'index']);
 }
