@@ -157,7 +157,7 @@ abstract class Model_Cart_Item
     public function setPrice($price): self
     {
         if (0 >= $price) {
-            throw new Cart_Item_Exception('Price less or equal to zero', $this);
+            throw (new Cart_Item_Exception('Price less or equal to zero'))->setItem($this);
         }
         $this->price = (float) $price;
         return $this;
@@ -172,13 +172,13 @@ abstract class Model_Cart_Item
     public function setMinQty($minQty): self
     {
         if (0 >= $minQty) {
-            throw new Cart_Item_Exception('Minimal quantity less or equal to zero', $this);
+            throw (new Cart_Item_Exception('Minimal quantity less or equal to zero'))->setItem($this);
         }
         if ($this->maxQty && $minQty > $this->maxQty) {
-            throw new Cart_Item_Exception('Minimal quantity more than maximal', $this);
+            throw (new Cart_Item_Exception('Minimal quantity more than maximal'))->setItem($this);
         }
         if ($this->qty && $minQty > $this->qty) {
-            throw new Cart_Item_Exception('Minimal quantity more than added in cart', $this);
+            throw (new Cart_Item_Exception('Minimal quantity more than added in cart'))->setItem($this);
         }
         $this->minQty = (float) $minQty;
         return $this;
@@ -194,10 +194,10 @@ abstract class Model_Cart_Item
     {
         if ($maxQty) {
             if ($this->minQty > $maxQty) {
-                throw new Cart_Item_Exception('Maximal quantity less than mininal', $this);
+                throw (new Cart_Item_Exception('Maximal quantity less than mininal'))->setItem($this);
             }
             if ($this->qty > $maxQty) {
-                throw new Cart_Item_Exception('Maximal quantity less than added in cart', $this);
+                throw (new Cart_Item_Exception('Maximal quantity less than added in cart'))->setItem($this);
             }
         }
         $this->maxQty = $maxQty ? (float) $maxQty : null;
@@ -214,10 +214,10 @@ abstract class Model_Cart_Item
     {
         $qty = is_null($qty) ? $this->minQty : (float) $qty;
         if ($qty < $this->minQty) {
-            throw new Cart_Item_Exception('Quantity less than minimal', $this);
+            throw (new Cart_Item_Exception('Quantity less than minimal'))->setItem($this);
         }
         if ($this->maxQty && $qty > $this->maxQty) {
-            throw new Cart_Item_Exception('Quantity more than maximal', $this);
+            throw (new Cart_Item_Exception('Quantity more than maximal'))->setItem($this);
         }
         $this->qty = $qty;
         return $this;
