@@ -1,4 +1,4 @@
-## Shopping Cart module for Kohana framework 3.x
+## Shopping Cart module for Kohana7(KF7) framework
 ====================
 
-Abstract E-commerce cart for Kohana 3.x (in developing)
+Abstract E-commerce cart, module in developing.
